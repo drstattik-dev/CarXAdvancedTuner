@@ -30,6 +30,11 @@ namespace CarXTuner
             Logger.LogInfo("CarXTuner Loaded");
         }
 
+        public void Unload() {
+            Logger.LogInfo("CarXTuner Unloaded");
+            Object.Destroy(this);
+        }
+
         //Base variable setup
         public bool init;
         public bool CR_running;
@@ -88,15 +93,21 @@ namespace CarXTuner
         void OnGUI()
         {
             if (raceCar) {
-                GUIStyle style = new GUIStyle(GUI.skin.window);
+                //GUIStyle style = new GUIStyle(GUI.skin.window);
                 
-                GUI.skin.window = style;
+                //GUI.skin.window = style;
                 winTuner = new Rect(20, 20, 500, 350);
                 winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Tuner!"); 
             }
         }
 
         char[] newLine = "\n\r".ToCharArray();
+
+        void UpdateDesc() {
+            CARX.SetCarDesc(desc, true);
+            //raceCar = null;
+            Logger.LogInfo("CarX Desc Updated!");
+        }
 
         void TunerWindow(int windowID)
         {
@@ -154,26 +165,21 @@ namespace CarXTuner
                         } else if ( (object) entry.Value["fieldType"] == "TextField" ) {
                             TextField (r, entry.Key, false);
                         }
-
+                        //Logger.LogInfo((object) entry.Value["Current"]);
                         entry.Value["Object"].GetType().GetProperty(entry.Key).SetValue(entry.Value["Object"], (object) entry.Value["Current"]);
-                    } else if ( (object) entry.Value["Type"] == "classProperty" && entry.Value["class"] != null ) {
-                        //GUI.Label(r, entry.Key);
-
-                        //TextField (r, entry.Key, false);
-                        //((object)(entry.Value["class"])["frontLock"]) = entry.Value["Current"];
-                        //entry.Value["class"].GetType().GetProperty(entry.Key).SetValue(entry.Value["class"], (object) entry.Value["Current"]);
                     }
 
                     n++;
                 }
-                //if (GUI.Button(new Rect(10, 30 * n, 75, 30), "Click"))
-                //{
+                if (GUI.Button(new Rect(10, 30 * n, 75, 30), "Click"))
+                {
                     desc.frontSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.rearSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.frontSuspension.frontLock = 120f;
-                    CARX.SetCarDesc(desc, true);
+                    UpdateDesc();
+                    //CARX.SetCarDesc(desc, true);
                     //Logger.LogInfo("CarX.CarDesc: " + desc.);
-                //}
+                }
             }
         }
 
