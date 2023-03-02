@@ -30,6 +30,10 @@ namespace CarXTuner
             Logger.LogInfo("CarXTuner Loaded");
         }
 
+        //public static void Unload() {
+        //    Object.Destroy(CarXTuner.Plugin);
+        //}
+
         //Base variable setup
         public bool init;
         public bool CR_running;
@@ -156,24 +160,18 @@ namespace CarXTuner
                         }
 
                         entry.Value["Object"].GetType().GetProperty(entry.Key).SetValue(entry.Value["Object"], (object) entry.Value["Current"]);
-                    } else if ( (object) entry.Value["Type"] == "classProperty" && entry.Value["class"] != null ) {
-                        //GUI.Label(r, entry.Key);
-
-                        //TextField (r, entry.Key, false);
-                        //((object)(entry.Value["class"])["frontLock"]) = entry.Value["Current"];
-                        //entry.Value["class"].GetType().GetProperty(entry.Key).SetValue(entry.Value["class"], (object) entry.Value["Current"]);
                     }
 
                     n++;
                 }
-                //if (GUI.Button(new Rect(10, 30 * n, 75, 30), "Click"))
-                //{
+                if (GUI.Button(new Rect(10, 30 * n, 75, 30), "Click"))
+                {
                     desc.frontSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.rearSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.frontSuspension.frontLock = 120f;
                     CARX.SetCarDesc(desc, true);
                     //Logger.LogInfo("CarX.CarDesc: " + desc.);
-                //}
+                }
             }
         }
 
