@@ -2759,17 +2759,17 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "d:\\GitHub\\BepInExTemp\\CarXTuner\\CarXTuner.csproj",
+      "projectUniqueName": "D:\\GitHub\\CarXAdvancedTuner\\CarXTuner.csproj",
       "projectName": "CarXTuner",
-      "projectPath": "d:\\GitHub\\BepInExTemp\\CarXTuner\\CarXTuner.csproj",
+      "projectPath": "D:\\GitHub\\CarXAdvancedTuner\\CarXTuner.csproj",
       "packagesPath": "C:\\Users\\mancave\\.nuget\\packages\\",
-      "outputPath": "d:\\GitHub\\BepInExTemp\\CarXTuner\\obj\\",
+      "outputPath": "D:\\GitHub\\CarXAdvancedTuner\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "d:\\GitHub\\BepInExTemp\\CarXTuner\\NuGet.Config",
+        "D:\\GitHub\\CarXAdvancedTuner\\NuGet.Config",
         "C:\\Users\\mancave\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"

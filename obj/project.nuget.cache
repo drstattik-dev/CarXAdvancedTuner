@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "xJBDT30RFGwLmHx1Fb5Ss4Hca9aFqp0WfH6mfzo6cTTdfa71qv8xATY64DdSasbcXrEHNSi5c6KWA8DRp65ALQ==",
+  "dgSpecHash": "8t34n05CQFM11ADp7cOhwvzreONGPZIQVKm/fSX18IR6cKiIuGO6qC+ouzTMvESlShbYxfQ9X5qQp3qapGyBEA==",
   "success": true,
-  "projectFilePath": "D:\\GitHub\\BepInExTemp\\CarXTuner\\CarXTuner.csproj",
+  "projectFilePath": "D:\\GitHub\\CarXAdvancedTuner\\CarXTuner.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\mancave\\.nuget\\packages\\bepinex.analyzers\\1.0.8\\bepinex.analyzers.1.0.8.nupkg.sha512",
     "C:\\Users\\mancave\\.nuget\\packages\\bepinex.baselib\\5.4.20\\bepinex.baselib.5.4.20.nupkg.sha512",

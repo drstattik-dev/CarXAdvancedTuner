@@ -63,14 +63,15 @@ namespace CarXTuner
 
                     engineTune = new Dictionary<string, Dictionary<string, object>>
                     {
-                        { "engineTurboPressure", new Dictionary<string, object>         { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 3.3f } } },
-                        { "engineTurboCharged", new Dictionary<string, object>          { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "Toggle" },    { "Current", true } } },
-                        { "engineRevLimiter", new Dictionary<string, object>            { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 9800f } } },
-                        { "rearTyreFrictionMultiplier", new Dictionary<string, object>  { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 1.2f } } },
-                        { "frontTyreFrictionMultiplier", new Dictionary<string, object> { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 1.2f } } },
-                        { "SetEngineMaxTorque", new Dictionary<string, object>          { { "Type", "Method" },   { "Object", CARX }, { "fieldType", "TextField" }, { "Args", new Dictionary<string, object> { { "engineMaxTorque", 700f }, { "engineRPMAtMaxTorque", 3500f } }  } } },
-                        { "finaldrive", new Dictionary<string, object>                  { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 3.5f } } },
-                        { "engineRevLimiterStep", new Dictionary<string, object>        { { "Type", "Property" }, { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 250f } } },
+                        { "engineTurboPressure", new Dictionary<string, object>         { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 3.3f } } },
+                        { "engineTurboCharged", new Dictionary<string, object>          { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "Toggle" },    { "Current", true } } },
+                        { "engineRevLimiter", new Dictionary<string, object>            { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 9800f } } },
+                        { "rearTyreFrictionMultiplier", new Dictionary<string, object>  { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 1.2f } } },
+                        { "frontTyreFrictionMultiplier", new Dictionary<string, object> { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 1.2f } } },
+                        { "SetEngineMaxTorque", new Dictionary<string, object>          { { "Type", "Method" },         { "Object", CARX }, { "fieldType", "TextField" }, { "Args", new Dictionary<string, object> { { "engineMaxTorque", 700f }, { "engineRPMAtMaxTorque", 3500f } }  } } },
+                        { "finaldrive", new Dictionary<string, object>                  { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 3.5f } } },
+                        { "engineRevLimiterStep", new Dictionary<string, object>        { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 250f } } },
+                        //{ "frontLock", new Dictionary<string, object>                   { { "Type", "classProperty" },  { "class", desc.frontSuspension }, { "fieldType", "TextField" }, { "Current", 120f } } },
                     };
 
                     suspensionTune = new Dictionary<string, Dictionary<string, object>>
@@ -87,8 +88,11 @@ namespace CarXTuner
         void OnGUI()
         {
             if (raceCar) {
+                GUIStyle style = new GUIStyle(GUI.skin.window);
+                
+                GUI.skin.window = style;
                 winTuner = new Rect(20, 20, 500, 350);
-                winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Tuner"); 
+                winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Tuner!"); 
             }
         }
 
@@ -152,16 +156,21 @@ namespace CarXTuner
                         }
 
                         entry.Value["Object"].GetType().GetProperty(entry.Key).SetValue(entry.Value["Object"], (object) entry.Value["Current"]);
+                    } else if ( (object) entry.Value["Type"] == "classProperty" && entry.Value["class"] != null ) {
+                        //GUI.Label(r, entry.Key);
+
+                        //TextField (r, entry.Key, false);
+                        //((object)(entry.Value["class"])["frontLock"]) = entry.Value["Current"];
+                        //entry.Value["class"].GetType().GetProperty(entry.Key).SetValue(entry.Value["class"], (object) entry.Value["Current"]);
                     }
 
                     n++;
                 }
                 //if (GUI.Button(new Rect(10, 30 * n, 75, 30), "Click"))
                 //{
-                    CarX.CarDesc desc = null;
-                    CARX.GetCarDesc(ref desc);
-                    desc.frontSuspension.springLength = 1 + Mathf.Sin(Time.time)/2;
-                    desc.rearSuspension.springLength = 1 + Mathf.Sin(Time.time)/2;
+                    desc.frontSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
+                    desc.rearSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
+                    desc.frontSuspension.frontLock = 120f;
                     CARX.SetCarDesc(desc, true);
                     //Logger.LogInfo("CarX.CarDesc: " + desc.);
                 //}
