@@ -42,7 +42,7 @@ namespace CarXTuner
 
         private static RaceCar raceCar;
         private static CARXCar CARX;
-        private static CarX.CarDesc desc = null;
+        private static CarX.CarDesc desc;
 
         public static Dictionary<string, Dictionary<string, object>> engineTune;
         public static Dictionary<string, Dictionary<string, object>> suspensionTune;
@@ -63,6 +63,9 @@ namespace CarXTuner
                     Logger.LogInfo("BaseCar Found!");
                     CARX = raceCar.GetComponent<CARXCar>();
                     CARX.GetCarDesc(ref desc);
+                    //Logger.LogInfo(desc.frontSuspension.frontLock);
+                    //Logger.LogInfo(desc);
+                    //CARX.GetCarDesc(ref desc);
 
                     init = false;
 
@@ -76,7 +79,17 @@ namespace CarXTuner
                         { "SetEngineMaxTorque", new Dictionary<string, object>          { { "Type", "Method" },         { "Object", CARX }, { "fieldType", "TextField" }, { "Args", new Dictionary<string, object> { { "engineMaxTorque", 700f }, { "engineRPMAtMaxTorque", 3500f } }  } } },
                         { "finaldrive", new Dictionary<string, object>                  { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 3.5f } } },
                         { "engineRevLimiterStep", new Dictionary<string, object>        { { "Type", "Property" },       { "Object", CARX }, { "fieldType", "TextField" }, { "Current", 250f } } },
-                        //{ "frontLock", new Dictionary<string, object>                   { { "Type", "classProperty" },  { "class", desc.frontSuspension }, { "fieldType", "TextField" }, { "Current", 120f } } },
+                        { "frontSuspension", 
+                        
+                            new Dictionary<string, object> { 
+                                { "Properties", new Dictionary<string, Dictionary<string, object> > {
+                                        { "frontLock", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 120f } } },
+                                    }
+                                },
+                                { "Type", "classProperty" },
+                                { "Object", desc }
+                            }
+                        }
                     };
 
                     suspensionTune = new Dictionary<string, Dictionary<string, object>>
@@ -127,6 +140,16 @@ namespace CarXTuner
                         }
                     } else if ( (object) entry.Value["Type"] == "Property" && entry.Value["Object"].GetType().GetProperty(entry.Key) != null ) {
                         entry.Value["Current"] = (object) entry.Value["Object"].GetType().GetProperty(entry.Key).GetValue(entry.Value["Object"], null);
+                    } else if ( (object) entry.Value["Type"] == "classProperty") {
+                        object Info = engineTune[entry.Key]["Object"];
+                        FieldInfo[] Fields = Info.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+                        FieldInfo Field = Info.GetType().GetField(entry.Key);
+
+                        foreach(KeyValuePair<string, Dictionary<string, object>> e in (Dictionary<string, Dictionary<string, object>>) engineTune[entry.Key]["Properties"])
+                        {
+                            object val = Field.GetValue(Info).GetType().GetField(e.Key).GetValue(Field.GetValue(Info));
+                            e.Value["Current"] = (object) val;
+                        }
                     }
                 }
 
@@ -143,7 +166,7 @@ namespace CarXTuner
                     if ( (object) entry.Value["Type"] == "Method" && entry.Value["Object"].GetType().GetMethod(entry.Key) != null ) {
                         GUI.Label(r, entry.Key);
 
-                        TextField (r, entry.Key, true, (Dictionary<string, object>)engineTune[entry.Key]["Args"]);
+                        TextField (r, entry.Key, true, "" ,(Dictionary<string, object>)engineTune[entry.Key]["Args"]);
 
                         Dictionary<string, object> args = (Dictionary<string, object>) entry.Value["Args"];
                         object[] parameters = new object[args.Count];
@@ -165,8 +188,23 @@ namespace CarXTuner
                         } else if ( (object) entry.Value["fieldType"] == "TextField" ) {
                             TextField (r, entry.Key, false);
                         }
-                        //Logger.LogInfo((object) entry.Value["Current"]);
+
                         entry.Value["Object"].GetType().GetProperty(entry.Key).SetValue(entry.Value["Object"], (object) entry.Value["Current"]);
+                    } else if ( (object) entry.Value["Type"] == "classProperty") {
+                        object Info = engineTune[entry.Key]["Object"];
+                        FieldInfo[] Fields = Info.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
+                        FieldInfo Field = Info.GetType().GetField(entry.Key);
+
+
+                        foreach(KeyValuePair<string, Dictionary<string, object>> e in (Dictionary<string, Dictionary<string, object>>) engineTune[entry.Key]["Properties"])
+                        {
+                            r = new Rect (10, 30 * n, 150, 20);
+                            GUI.Label(r, e.Key);
+
+                            TextField (r, entry.Key, false, e.Key);
+
+                            Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
+                        }
                     }
 
                     n++;
@@ -176,6 +214,10 @@ namespace CarXTuner
                     desc.frontSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.rearSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.frontSuspension.frontLock = 120f;
+                    desc.frontSuspension.stiffness = 65000f;
+                    desc.frontSuspension.slowBump = 6500f;
+                    desc.rearSuspension.slowBump = 6000f;
+                    desc.rearSuspension.stiffness = 60000f;
                     UpdateDesc();
                     //CARX.SetCarDesc(desc, true);
                     //Logger.LogInfo("CarX.CarDesc: " + desc.);
@@ -183,7 +225,7 @@ namespace CarXTuner
             }
         }
 
-        object TextField (Rect screenRect, string Key = "", bool hasName = false, Dictionary<string, object> dict = null) {
+        object TextField (Rect screenRect, string Key = "", bool hasName = false , string Key2 = "", Dictionary<string, object> dict = null) {
             var n = 0;
             Dictionary<string, object> Alt = new Dictionary<string, object>();
             GUIStyle style = new GUIStyle();
@@ -210,20 +252,50 @@ namespace CarXTuner
             } else {
                 screenRect.x += screenRect.width + 15;
 
-                if (engineTune[Key].ContainsKey("Original") == false)
-                    engineTune[Key]["Original"] = (object) engineTune[Key]["Current"].ToString();
+                Dictionary<string, Dictionary<string, object>> Properties = null;
+
+                object original = null;
+                object current = null;
+
+                if ( engineTune[Key].ContainsKey("Properties") ) {
+                    Properties = ((Dictionary<string, Dictionary<string, object>>) engineTune[Key]["Properties"]);
+                    if ( !Properties[Key2].ContainsKey("Original")) {
+                        Properties[Key2].Add("Original", Properties[Key2]["Current"]);
+                    }
+                    original = (object) Properties[Key2]["Original"];
+                    current = (object) Properties[Key2]["Current"];
+                } else {
+                    if ( !engineTune[Key].ContainsKey("Original") ) {
+                        engineTune[Key].Add("Original", (object) engineTune[Key]["Current"]);
+                    }
+                    original = (object) engineTune[Key]["Original"];
+                    current = (object) engineTune[Key]["Current"];
+                }
 
                 Event e = Event.current;
-                if (e.keyCode == KeyCode.Return) {
-                    engineTune[Key]["Current"] = (object) float.Parse(engineTune[Key]["Original"].ToString());
+
+                if (e.keyCode == KeyCode.Return && e.type == EventType.KeyDown) {
+                    if (Properties != null) {
+                        Properties[Key2]["Current"] = (object) float.Parse(original.ToString());
+                    } else {
+                        engineTune[Key]["Current"] = (object) float.Parse(original.ToString());
+                    }
+                    UpdateDesc();
+                    //current = (object) float.Parse(original.ToString());
                 } else {
-                    engineTune[Key]["Original"] = (object) GUI.TextField (screenRect, engineTune[Key]["Original"].ToString());
+                    if (Properties != null) {
+                        //Logger.LogInfo("Properties[Key2][\"Current\"] = " + Properties[Key2]["Current"]);
+                        Properties[Key2]["Original"] = (object) float.Parse( GUI.TextField (screenRect, original.ToString()));
+                    } else {
+                        engineTune[Key]["Original"] = (object) float.Parse(GUI.TextField (screenRect, original.ToString()));
+                    }
+                    //original = (object) GUI.TextField (screenRect, original.ToString());
                 }
 
                 if (hasName) {
                     GUI.Label(screenRect, Key, style);
                 }
-                return engineTune[Key]["Current"];
+                return null;
             }
 
             return null;
