@@ -38,7 +38,7 @@ namespace CarXTuner
         //Base variable setup
         public bool init;
         public bool CR_running;
-        public Rect winTuner;
+        public Rect winTuner = new Rect(20, 20, 400, 575);
 
         private static RaceCar raceCar;
         private static CARXCar CARX;
@@ -84,9 +84,9 @@ namespace CarXTuner
                             new Dictionary<string, object> { 
                                 { "Properties", new Dictionary<string, Dictionary<string, object> > {
                                         { "frontLock", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 120f } } },
-                                        { "springLength", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 0.08f } } },
+                                        { "springLength", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 0.08f }, { "Min", 0.001f }, { "Max", 1f } } },
                                         { "stiffness", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 75000f } } },
-                                        { "camber", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", -2f } } },
+                                        { "camber", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", -2f }, { "Min", -20f }, { "Max", 20f } } },
                                     }
                                 },
                                 { "Type", "classProperty" },
@@ -97,19 +97,15 @@ namespace CarXTuner
                         
                             new Dictionary<string, object> { 
                                 { "Properties", new Dictionary<string, Dictionary<string, object> > {
-                                        { "springLength", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 0.08f } } },
+                                        { "springLength", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 0.08f }, { "Min", 0.001f }, { "Max", 1f } } },
                                         { "stiffness", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 63000f } } },
-                                        { "camber", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", -0.6f } } },
+                                        { "camber", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", -0.6f }, { "Min", -20f }, { "Max", 20f } } },
                                     }
                                 },
                                 { "Type", "classProperty" },
                                 { "Object", desc }
                             }
                         }
-                    };
-
-                    suspensionTune = new Dictionary<string, Dictionary<string, object>>
-                    {
                     };
                 } else {
                     Logger.LogInfo("Waiting for RaceCar...");
@@ -125,7 +121,6 @@ namespace CarXTuner
                 //GUIStyle style = new GUIStyle(GUI.skin.window);
                 
                 //GUI.skin.window = style;
-                winTuner = new Rect(20, 20, 350, 550);
                 GUI.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 1f);
                 winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Engine Tuner!"); 
                 //winTuner = GUI.Window(1, winTuner , TunerWindow, "CarX Advanced Suspension Tuner!"); 
@@ -203,9 +198,19 @@ namespace CarXTuner
 
                         if ( (object) entry.Value["fieldType"]== "Toggle" ) {
                             r.x += (r.width + 15);
+                            r.width = 20;
+                            r.height = 20;
                             entry.Value["Current"] = GUI.Toggle(r, (bool) entry.Value["Current"], "");
                         } else if ( (object) entry.Value["fieldType"] == "TextField" ) {
                             TextField (r, entry.Key, false);
+                        } else if ( (object) entry.Value["fieldType"] == "Slider" ) {
+                            //Slider (r, entry.Value["Current"], entry.Value["Min"], entry.Value["Max"]);
+                            r = new Rect (10, 30 * n, 150, 20);
+                            GUI.Label(r, entry.Key);
+                            entry.Value["Current"] = Slider (r, entry.Value["Current"], entry.Value["Min"], entry.Value["Max"]);
+                            //Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
+                        } else if ( (object) entry.Value["fieldType"] == "DropDown" ) {
+                            //DropDown (r, entry.Key);
                         }
 
                         entry.Value["Object"].GetType().GetProperty(entry.Key).SetValue(entry.Value["Object"], (object) entry.Value["Current"]);
@@ -224,12 +229,32 @@ namespace CarXTuner
 
                         foreach(KeyValuePair<string, Dictionary<string, object>> e in (Dictionary<string, Dictionary<string, object>>) engineTune[entry.Key]["Properties"])
                         {
-                            r = new Rect (10, 30 * n, 150, 20);
-                            GUI.Label(r, e.Key);
+                            if ( (object) e.Value["fieldType"]== "Toggle" ) {
+                                r.x += (r.width + 15);
+                                r.width = 20;
+                                r.height = 20;
+                                e.Value["Current"] = GUI.Toggle(r, (bool) e.Value["Current"], "");
+                            } else if ( (object) e.Value["fieldType"] == "TextField" ) {
+                                r = new Rect (10, 30 * n, 150, 20);
+                                GUI.Label(r, e.Key);
+                                TextField (r, entry.Key, false, e.Key);
+                                Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
+                            } else if ( (object) e.Value["fieldType"] == "Slider" ) {
+                                r = new Rect (10, 30 * n, 150, 20);
+                                GUI.Label(r, e.Key);
+                                e.Value["Current"] = Slider (r, e.Value["Current"], e.Value["Min"], e.Value["Max"]);
+                                Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
+                            } else if ( (object) e.Value["fieldType"] == "DropDown" ) {
+                                //DropDown (r, entry.Key);
+                            }
 
-                            TextField (r, entry.Key, false, e.Key);
 
-                            Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
+                            //r = new Rect (10, 30 * n, 150, 20);
+                            //GUI.Label(r, e.Key);
+
+                            //TextField (r, entry.Key, false, e.Key);
+
+                            //Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
                             n++;
                         }
                     }
@@ -250,7 +275,7 @@ namespace CarXTuner
                     //Logger.LogInfo("CarX.CarDesc: " + desc.);
                 }
             }
-            Logger.LogInfo("Init Dragger");
+            //Logger.LogInfo("Init Dragger");
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
         }
 
@@ -261,16 +286,18 @@ namespace CarXTuner
             style.alignment = TextAnchor.MiddleCenter;
             style.contentOffset = new Vector2(0, -15);
             style.fontSize = 10;
+            style.normal.textColor = Color.white;
             screenRect.width /= 2;
             screenRect.x += screenRect.width;
             if (dict != null) {
+                screenRect.x += screenRect.width + 15;
                 foreach(KeyValuePair<string, object> e in dict)
                 {
-                    screenRect.x += screenRect.width + 15;
                     object Field = (object) float.Parse(GUI.TextField (screenRect, e.Value.ToString()));
                     if (hasName) {
                         GUI.Label(screenRect, e.Key, style);
                     }
+                    screenRect.x += screenRect.width + 30;
                     //Event ev = Event.current;
                     //if (ev.keyCode == KeyCode.Return) {
                     Alt.Add(e.Key, Field);
@@ -330,12 +357,33 @@ namespace CarXTuner
             return null;
         }
 
-        float LabelSlider (Rect screenRect, float sliderValue, float sliderMaxValue, string labelText) {
-            GUI.Label (screenRect, labelText);
+        object Slider (Rect screenRect, object sliderValue, object min, object max) {
+            screenRect.x += screenRect.width + 15;
+            screenRect.y += screenRect.height / 4;
+            screenRect.width /= 2;
 
-            screenRect.x += screenRect.width; 
-        
-            sliderValue = GUI.HorizontalSlider (screenRect, sliderValue, 0.0f, sliderMaxValue);
+            //sliderValue = (object) GUI.HorizontalSlider (screenRect, (float) sliderValue, (float) min, (float) max);
+            Event e = Event.current;
+            //Logger.LogInfo("KeyCode:" + e.keyCode + " Type:" + e.type  );
+
+            if (e.type == EventType.MouseDrag || e.type == EventType.MouseDown || e.type == EventType.MouseUp) {
+                UpdateDesc();
+            }
+
+            GUIStyle style = new GUIStyle(GUI.skin.label);
+            style.alignment = TextAnchor.MiddleCenter;
+
+            Rect r = screenRect;
+            r.y -= r.height/1.45f;
+
+            GUI.Label(r, sliderValue.ToString(), style);
+
+            GUI.skin.horizontalSliderThumb.fixedWidth = 10;
+            GUI.skin.horizontalSliderThumb.fixedHeight= 10;
+            GUI.skin.horizontalSlider.fixedHeight = 12;
+
+            sliderValue = (object) GUI.HorizontalSlider (screenRect, (float) sliderValue, (float) min, (float) max, GUI.skin.horizontalSlider, GUI.skin.horizontalSliderThumb);
+            //Logger.LogInfo("Slider: " + sliderValue);
             return sliderValue;
         }
     }
