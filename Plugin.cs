@@ -84,6 +84,22 @@ namespace CarXTuner
                             new Dictionary<string, object> { 
                                 { "Properties", new Dictionary<string, Dictionary<string, object> > {
                                         { "frontLock", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 120f } } },
+                                        { "springLength", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 0.08f } } },
+                                        { "stiffness", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 75000f } } },
+                                        { "camber", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", -2f } } },
+                                    }
+                                },
+                                { "Type", "classProperty" },
+                                { "Object", desc }
+                            }
+                        },
+                        { "rearSuspension", 
+                        
+                            new Dictionary<string, object> { 
+                                { "Properties", new Dictionary<string, Dictionary<string, object> > {
+                                        { "springLength", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 0.08f } } },
+                                        { "stiffness", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 63000f } } },
+                                        { "camber", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", -0.6f } } },
                                     }
                                 },
                                 { "Type", "classProperty" },
@@ -109,7 +125,8 @@ namespace CarXTuner
                 //GUIStyle style = new GUIStyle(GUI.skin.window);
                 
                 //GUI.skin.window = style;
-                winTuner = new Rect(20, 20, 500, 350);
+                winTuner = new Rect(20, 20, 350, 550);
+                GUI.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 1f);
                 winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Engine Tuner!"); 
                 //winTuner = GUI.Window(1, winTuner , TunerWindow, "CarX Advanced Suspension Tuner!"); 
             }
@@ -180,6 +197,7 @@ namespace CarXTuner
                         }
 
                         entry.Value["Object"].GetType().GetMethod(entry.Key).Invoke(entry.Value["Object"], parameters);
+                        n++;
                     } else if ( (object) entry.Value["Type"] == "Property" && entry.Value["Object"].GetType().GetProperty(entry.Key) != null ) {
                         GUI.Label(r, entry.Key);
 
@@ -191,11 +209,18 @@ namespace CarXTuner
                         }
 
                         entry.Value["Object"].GetType().GetProperty(entry.Key).SetValue(entry.Value["Object"], (object) entry.Value["Current"]);
+                        n++;
                     } else if ( (object) entry.Value["Type"] == "classProperty") {
                         object Info = engineTune[entry.Key]["Object"];
                         FieldInfo[] Fields = Info.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public);
                         FieldInfo Field = Info.GetType().GetField(entry.Key);
 
+                        GUIStyle guiStyle = new GUIStyle();
+                        guiStyle.fontSize = 15;
+                        guiStyle.normal.textColor = Color.white;
+                        guiStyle.fontStyle = FontStyle.Bold;
+                        GUI.Label(r, entry.Key, guiStyle);
+                        n++;
 
                         foreach(KeyValuePair<string, Dictionary<string, object>> e in (Dictionary<string, Dictionary<string, object>>) engineTune[entry.Key]["Properties"])
                         {
@@ -205,10 +230,11 @@ namespace CarXTuner
                             TextField (r, entry.Key, false, e.Key);
 
                             Field.GetValue(Info).GetType().GetField(e.Key).SetValue(Field.GetValue(Info), (object) e.Value["Current"]);
+                            n++;
                         }
                     }
 
-                    n++;
+                    //n++;
                 }
                 if (GUI.Button(new Rect(10, 30 * n, 75, 30), "MONSTA"))
                 {
@@ -224,6 +250,8 @@ namespace CarXTuner
                     //Logger.LogInfo("CarX.CarDesc: " + desc.);
                 }
             }
+            Logger.LogInfo("Init Dragger");
+            GUI.DragWindow(new Rect(0, 0, 10000, 20));
         }
 
         object TextField (Rect screenRect, string Key = "", bool hasName = false , string Key2 = "", Dictionary<string, object> dict = null) {
