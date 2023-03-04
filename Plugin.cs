@@ -110,7 +110,8 @@ namespace CarXTuner
                 
                 //GUI.skin.window = style;
                 winTuner = new Rect(20, 20, 500, 350);
-                winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Tuner!"); 
+                winTuner = GUI.Window(0, winTuner, TunerWindow, "CarX Advanced Engine Tuner!"); 
+                //winTuner = GUI.Window(1, winTuner , TunerWindow, "CarX Advanced Suspension Tuner!"); 
             }
         }
 
@@ -209,7 +210,7 @@ namespace CarXTuner
 
                     n++;
                 }
-                if (GUI.Button(new Rect(10, 30 * n, 75, 30), "Click"))
+                if (GUI.Button(new Rect(10, 30 * n, 75, 30), "MONSTA"))
                 {
                     desc.frontSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
                     desc.rearSuspension.springLength = 0.3f;// + Mathf.Sin(Time.time)/2;
