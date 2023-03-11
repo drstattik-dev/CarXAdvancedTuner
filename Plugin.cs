@@ -1,4 +1,6 @@
 ﻿using BepInEx;
+using BepInEx.Configuration;
+using HarmonyLib;
 using UnityEngine;
 
 using System;
@@ -43,7 +45,6 @@ namespace CarXTuner
                 StartCoroutine(setupVariables ());
             }
         }
-
 
         public IEnumerator setupVariables ()
         {
