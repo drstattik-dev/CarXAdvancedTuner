@@ -153,6 +153,10 @@ public class CarXHelper : MonoBehaviour
 
      public static void TunerWindow( ref Dictionary<string, Dictionary<string, object>> engineTune, ref CarX.CarDesc desc, ref CarX.CarDesc originalDesc, Action setDefaultProperties, ref Rect winTuner)
         {
+            //GUIHandler.DrawBoxOutline(new Vector2(0,0), winTuner.width, winTuner.height, new Color(0.259f, 0.282f, 0.349f, 0.7f));
+            GUIHandler.DrawBox(new Vector2(0, 0), new Vector2(winTuner.width, 18), new Color(0.159f, 0.182f, 0.249f, 0.7f), false);
+            GUIHandler.DrawBox(new Vector2(0, 18), new Vector2(winTuner.width, winTuner.height-18), new Color(0.259f, 0.282f, 0.349f, 0.7f), false);
+            GUI.color = Color.white;
             int n = 1;
 
             Rect r = new Rect (10, 30 * n, 150, 20);
@@ -219,7 +223,7 @@ public class CarXHelper : MonoBehaviour
                 }
             }
 
-            if (GUI.Button(new Rect(10, 30 * 10, 75, 30), "RESET"))
+            if (GUI.Button(new Rect(10, 30 * 11, 75, 30), "RESET"))
             {
                 CARX.SetCarDesc(originalDesc, true);
                 CARX.GetCarDesc(ref desc);

@@ -1,23 +1,28 @@
 ﻿using BepInEx;
-using HarmonyLib;
 using UnityEngine;
-using System.Reflection;
-using BepInEx.Configuration;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
+
 using System;
 
+using System.Reflection;
+
+using System.Linq;
+using System.Text;
+
+using System.Collections;
+using System.Collections.Generic;
+
+//using ImGuiNET;
 
 namespace CarXTuner
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
+
         public bool init= false;
         public bool DebugLogger = true;
 
-        public Rect winTuner = new Rect(20, 20, 900, (30 * 11)+10);
+        public Rect winTuner = new Rect(20, 20, 900, (30 * 12)+10);
 
         public static Dictionary<string, Dictionary<string, object>> engineTune;
 
@@ -26,6 +31,11 @@ namespace CarXTuner
 
         private static RaceCar raceCar = null;
         private static CARXCar CARX = null;
+
+        private void Awake()
+        {
+            
+        }
 
         public void Update() {
             if (!CarXHelper.raceCar && !CarXHelper.CR_running)
@@ -93,7 +103,7 @@ namespace CarXTuner
                     new Dictionary<string, object> { 
                         { "Properties", new Dictionary<string, Dictionary<string, object> > {
                                 { "frontLock", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 120f } } },
-                                { "springLength", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 0.08f }, { "Min", 0.001f }, { "Max", 1f } } },
+                                { "springLength", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 0.08f }, { "Min", 0.01f }, { "Max", 1f } } },
                                 { "stiffness", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 75000f } } },
                                 { "camber", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", -2f }, { "Min", -20f }, { "Max", 20f } } },
                             }
@@ -109,9 +119,9 @@ namespace CarXTuner
                         { "Properties", new Dictionary<string, Dictionary<string, object> > {
                                 { "frictionMultiplier", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 1.1f }, { "Min", 0.01f }, { "Max", 5f } } },
                                 { "profile", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 25 }, { "Min", 1f }, { "Max", 50f } } },
-                                { "discDiam", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 21f }, { "Min", 0.001f }, { "Max", 50f } } },
+                                { "discDiam", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 21f }, { "Min", 0.01f }, { "Max", 50f } } },
                                 { "width", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 305 }, { "Min", 1f }, { "Max", 450f } } },
-                                { "mass", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 1 }, { "Min", 0f }, { "Max", 10f } } },
+                                { "mass", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 1 }, { "Min", 0f }, { "Max", 1000f } } },
                             }
                         },
                         { "Type", "classProperty" },
@@ -123,7 +133,7 @@ namespace CarXTuner
                 
                     new Dictionary<string, object> { 
                         { "Properties", new Dictionary<string, Dictionary<string, object> > {
-                                { "springLength", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 0.08f }, { "Min", 0.001f }, { "Max", 1f } } },
+                                { "springLength", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 0.08f }, { "Min", 0.01f }, { "Max", 1f } } },
                                 { "stiffness", new Dictionary<string, object> {{ "fieldType", "TextField" }, { "Current", 63000f } } },
                                 { "camber", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", -0.6f }, { "Min", -20f }, { "Max", 20f } } },
                             }
@@ -139,9 +149,9 @@ namespace CarXTuner
                         { "Properties", new Dictionary<string, Dictionary<string, object> > {
                                 { "frictionMultiplier", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 1.1f }, { "Min", 0.01f }, { "Max", 5f } } },
                                 { "profile", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 25 }, { "Min", 1f }, { "Max", 50f } } },
-                                { "discDiam", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 21f }, { "Min", 0.001f }, { "Max", 50f } } },
+                                { "discDiam", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 21f }, { "Min", 0.01f }, { "Max", 50f } } },
                                 { "width", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 305 }, { "Min", 1f }, { "Max", 450f } } },
-                                { "mass", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 1 }, { "Min", 0f }, { "Max", 10f } } },
+                                { "mass", new Dictionary<string, object> {{ "fieldType", "Slider" }, { "Current", 1 }, { "Min", 0f }, { "Max", 1000f } } },
                             }
                         },
                         { "Type", "classProperty" },
@@ -191,7 +201,7 @@ namespace CarXTuner
         void OnGUI()
         {
             if (raceCar) {
-                GUI.backgroundColor = new Color(0.0f, 0.0f, 0.0f, 1f);
+                GUI.backgroundColor = Color.clear;
                 GUI.color = new Color(0.0f, 0.0f, 1.0f, 1f);
                 winTuner = GUI.Window(0, winTuner, (int id) => { CarXHelper.TunerWindow(ref engineTune, ref desc, ref originalDesc, () => {setDefaultProperties();}, ref winTuner ); }, "CarX Advanced Engine Tuner!"); 
                 //winTuner = GUI.Window(1, winTuner , TunerWindow, "CarX Advanced Suspension Tuner!"); 
