@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "8t34n05CQFM11ADp7cOhwvzreONGPZIQVKm/fSX18IR6cKiIuGO6qC+ouzTMvESlShbYxfQ9X5qQp3qapGyBEA==",
+  "dgSpecHash": "RUcNmL754VePPq8GEZ4tvAR1N3fRd5G+kd6iHd3m/s1IkeV7oYV253/jjvOQrysjr/ma8dUo7eRmw7a4FV/IjA==",
   "success": true,
   "projectFilePath": "D:\\GitHub\\CarXAdvancedTuner\\CarXTuner.csproj",
   "expectedPackageFiles": [
@@ -15,6 +15,7 @@
     "C:\\Users\\mancave\\.nuget\\packages\\monomod.runtimedetour\\21.12.13.1\\monomod.runtimedetour.21.12.13.1.nupkg.sha512",
     "C:\\Users\\mancave\\.nuget\\packages\\monomod.utils\\21.12.13.1\\monomod.utils.21.12.13.1.nupkg.sha512",
     "C:\\Users\\mancave\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512",
+    "C:\\Users\\mancave\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
     "C:\\Users\\mancave\\.nuget\\packages\\system.collections\\4.3.0\\system.collections.4.3.0.nupkg.sha512",
     "C:\\Users\\mancave\\.nuget\\packages\\system.collections.nongeneric\\4.3.0\\system.collections.nongeneric.4.3.0.nupkg.sha512",
     "C:\\Users\\mancave\\.nuget\\packages\\system.collections.specialized\\4.3.0\\system.collections.specialized.4.3.0.nupkg.sha512",

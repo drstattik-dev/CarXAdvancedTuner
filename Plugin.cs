@@ -2,6 +2,7 @@
 using BepInEx.Configuration;
 using HarmonyLib;
 using UnityEngine;
+using Newtonsoft.Json;
 
 using System;
 
@@ -13,11 +14,17 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
+
+
 //using ImGuiNET;
 
 namespace CarXTuner
 {
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
+    [Serializable]
     public class Plugin : BaseUnityPlugin
     {
 
@@ -43,6 +50,58 @@ namespace CarXTuner
             if (!CarXHelper.raceCar && !CarXHelper.CR_running)
             {
                 StartCoroutine(setupVariables ());
+            }
+        }
+
+        public static void WriteToJsonFile<T>(string filePath, T objectToWrite, bool append = false) where T : new()
+        {
+            TextWriter writer = null;
+            try
+            {
+                var contentsToWriteToFile = JsonConvert.SerializeObject(objectToWrite, Formatting.Indented,
+                        new JsonSerializerSettings()
+                        { 
+                            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                        });
+                writer = new StreamWriter(filePath, append);
+                writer.Write(contentsToWriteToFile);
+            }
+            finally
+            {
+                if (writer != null)
+                    writer.Close();
+            }
+        }
+
+        public static void ReadFromJsonFile<T>(string filePath, ref T tableToLoad) where T : new()
+        {
+            TextReader reader = null;
+            try
+            {
+                reader = new StreamReader(filePath);
+                var fileContents = reader.ReadToEnd();
+                tableToLoad = JsonConvert.DeserializeObject<T>(fileContents);
+            }
+            finally
+            {
+                if (reader != null)
+                    reader.Close();
+            }
+        }
+
+        public static void SaveConfig(string path) {
+            using (FileStream fs = new FileStream(path, FileMode.Create)) {
+                BinaryFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(fs, engineTune);
+            }
+        }
+
+        // A method to load the dictionary from the disk
+        public static void LoadConfig(string path) {
+            using (FileStream fs = new FileStream(path, FileMode.Open)) {
+                BinaryFormatter formatter = new BinaryFormatter();
+                fs.Position = 0;
+                engineTune = (Dictionary<string, Dictionary<string, object>>)formatter.Deserialize(fs);
             }
         }
 

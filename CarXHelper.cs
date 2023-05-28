@@ -230,6 +230,19 @@ public class CarXHelper : MonoBehaviour
                 setDefaultProperties();
             }
 
+            /*if (GUI.Button(new Rect((75 * 1) + 10, 30 * 11, 100, 30), "Save Config"))
+            {
+                CarXTuner.Plugin.WriteToJsonFile("D:\\Steam\\steamapps\\common\\CarX Drift Racing Online\\BepInEx\\scripts\\Config.json", engineTune);
+                
+                //CarXTuner.Plugin.SaveConfig("D:\\Steam\\steamapps\\common\\CarX Drift Racing Online\\BepInEx\\scripts\\Config.json");
+            }
+
+            if (GUI.Button(new Rect((75 * 2) + 10, 30 * 11, 100, 30), "Load Config"))
+            {
+                CarXTuner.Plugin.ReadFromJsonFile("D:\\Steam\\steamapps\\common\\CarX Drift Racing Online\\BepInEx\\scripts\\Config.json", ref engineTune);
+                //CarXTuner.Plugin.LoadConfig("D:\\Steam\\steamapps\\common\\CarX Drift Racing Online\\BepInEx\\scripts\\Config.json");
+            }*/
+
             winTuner.width = r.x + (r.width + 185);
             GUI.DragWindow(new Rect(0, 0, 10000, 20));
         }
